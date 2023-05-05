@@ -16,15 +16,21 @@ def get_settings() -> dict:
 
     return json.loads(pako_inflate(values[0][0]))
 
-def get_creator(creatorID:int=-1) -> t.Creator:
-    sql = f'select * from creators where creatorID={creatorID}'
+
+def get_creator(creatorID: int = -1) -> t.Creator:
+    sql = f"select * from creators where creatorID={creatorID}"
     cursor, values = exec_fetchall(sql)
     values = values[0]
-    return t.Creator(creatorID=values[0],firstName=values[1], lastName=values[2], fieldMode=values[3])
+    return t.Creator(
+        creatorID=values[0],
+        firstName=values[1],
+        lastName=values[2],
+        fieldMode=values[3],
+    )
 
 
 def get_creators() -> List[t.Creator]:
-    sql = 'select creatorID from creators'
+    sql = "select creatorID from creators"
     cursor, values = exec_fetchall(sql)
     if len(values) > 0:
         return [get_creator(value[0]) for value in values]
@@ -33,11 +39,10 @@ def get_creators() -> List[t.Creator]:
 
 
 def get_tags() -> List[t.Tag]:
-    sql = 'select * from tags'
+    sql = "select * from tags"
     cursor, values = exec_fetchall(sql)
 
-    return [t.Tag(tagId=i[0], name=i[1])
-            for i in values]
+    return [t.Tag(tagId=i[0], name=i[1]) for i in values]
 
 
 def get_collections() -> List[t.Collection]:
@@ -46,8 +51,7 @@ def get_collections() -> List[t.Collection]:
     """
 
     cursor, values = exec_fetchall(sql)
-    return [t.Collection(collectionID=i[0],
-                         collectionName=i[1]) for i in values]
+    return [t.Collection(collectionID=i[0], collectionName=i[1]) for i in values]
 
 
 def get_itemids(include_delete=False) -> List[int]:
@@ -65,15 +69,15 @@ def get_itemids(include_delete=False) -> List[int]:
     return [i[0] for i in values]
 
 
-def get_item_creators(itemID:int=-1) -> List[t.Creator]:
-    if itemID == -1 : return []
-    sql = f'select * from itemCreators where itemID={itemID}'
+def get_item_creators(itemID: int = -1) -> List[t.Creator]:
+    if itemID == -1:
+        return []
+    sql = f"select * from itemCreators where itemID={itemID}"
     cursor, values = exec_fetchall(sql)
     if len(values) != 0:
         return [get_creator(value[1]) for value in values]
     else:
         return []
-
 
 
 def get_items_info() -> List[t.Item]:
@@ -97,12 +101,22 @@ def get_items_info() -> List[t.Item]:
     res = []
     for item_id, val in item_value_map_.items():
         item_authors = get_item_creators(item_id)
-        item_datas = [t.ItemData(fileds(i[1]), i[2], i[3]) for i in val]
-        item = t.Item(itemID=item_id,
-                      key=get_item_key_by_itemid(item_id),
-                      itemDatas=item_datas,
-                      authors=item_authors)
+        item_datas = []
+        for a, b, c, *_ in val:
+            try:
+                item_datas.append(t.ItemData(fileds(a), b, c))
+            except Exception:
+                # TODO: implement missing fields
+                pass
+
+        item = t.Item(
+            itemID=item_id,
+            key=get_item_key_by_itemid(item_id),
+            itemDatas=item_datas,
+            authors=item_authors,
+        )
         res.append(item)
+
     return res
 
 
@@ -121,10 +135,12 @@ def get_item_info_by_itemid(itemID: int) -> t.Item:
 
     item_datas = [t.ItemData(fileds(i[1]), i[2], i[3]) for i in values]
     item_authors = get_item_creators(item_id)
-    return t.Item(itemID=item_id,
-                  key=get_item_key_by_itemid(itemID),
-                  itemDatas=item_datas,
-                  authors=item_authors)
+    return t.Item(
+        itemID=item_id,
+        key=get_item_key_by_itemid(itemID),
+        itemDatas=item_datas,
+        authors=item_authors,
+    )
 
 
 def get_attachments(type=-1) -> List[t.Attachment]:
@@ -145,13 +161,14 @@ def get_attachments(type=-1) -> List[t.Attachment]:
     cursor, values = exec_fetchall(sql)
 
     res = []
-    for (itemID, key, contentType, path) in values:
+    for itemID, key, contentType, path in values:
         if path is not None:
-            relpath = os.path.join('storage', key, path.replace('storage:', ''))
+            relpath = os.path.join("storage", key, path.replace("storage:", ""))
         else:
             relpath = None
-        file = t.Attachment(itemID=itemID, key=key,
-                            contentType=contentType, relpath=relpath)
+        file = t.Attachment(
+            itemID=itemID, key=key, contentType=contentType, relpath=relpath
+        )
         res.append(file)
     return res
 
@@ -183,11 +200,10 @@ def get_attachments_by_parentid(parentItemID: int) -> List[t.Attachment]:
     for item_id, val in item_value_map_.items():
         path = val[2]  # type:str
         key = item_id_key_map[item_id]
-        relpath = os.path.join('storage', key, path.replace('storage:', ''))
-        item = t.Attachment(itemID=item_id,
-                            key=key,
-                            contentType=val[1],
-                            relpath=relpath)
+        relpath = os.path.join("storage", key, path.replace("storage:", ""))
+        item = t.Attachment(
+            itemID=item_id, key=key, contentType=val[1], relpath=relpath
+        )
         res.append(item)
     return res
 
@@ -222,11 +238,13 @@ def get_item_attachments_by_parentid(parentItemID: int) -> List[t.Item]:
     for item_id, val in item_value_map_.items():
         item_datas = [t.ItemData(fileds(i[1]), i[2], i[3]) for i in val]
         item_authors = get_item_creators(item_id)
-        item = t.Item(itemID=item_id,
-                      key=item_id_key_map[item_id],
-                      itemType=itemTypes(item_id_type_map[item_id]),
-                      itemDatas=item_datas,
-                      authors=item_authors)
+        item = t.Item(
+            itemID=item_id,
+            key=item_id_key_map[item_id],
+            itemType=itemTypes(item_id_type_map[item_id]),
+            itemDatas=item_datas,
+            authors=item_authors,
+        )
         res.append(item)
     return res
 
@@ -253,10 +271,12 @@ def get_items_info_from_tag_by_tagid(tagID: int) -> List[t.Item]:
 
     for item_id, val in item_value_map_.items():
         item_datas = [t.ItemData(fileds(i[1]), i[2], i[3]) for i in val]
-        item = t.Item(itemID=item_id,
-                      key=item_id_key_map[item_id],
-                      itemType=itemTypes(item_id_type_map[item_id]),
-                      itemDatas=item_datas)
+        item = t.Item(
+            itemID=item_id,
+            key=item_id_key_map[item_id],
+            itemType=itemTypes(item_id_type_map[item_id]),
+            itemDatas=item_datas,
+        )
         res.append(item)
     return res
 
@@ -285,17 +305,19 @@ def get_items_info_from_coll_by_collid(collID: int) -> List[t.Item]:
     for item_id, val in item_value_map_.items():
         item_datas = [t.ItemData(fileds(i[1]), i[2], i[3]) for i in val]
         item_authors = get_item_creators(item_id)
-        item = t.Item(itemID=item_id,
-                      key=item_id_key_map[item_id],
-                      itemType=itemTypes(item_id_type_map[item_id]),
-                      itemDatas=item_datas,
-                      authors=item_authors)
+        item = t.Item(
+            itemID=item_id,
+            key=item_id_key_map[item_id],
+            itemType=itemTypes(item_id_type_map[item_id]),
+            itemDatas=item_datas,
+            authors=item_authors,
+        )
         res.append(item)
     return res
 
 
 def get_items_key_by_itemid(*itemID: int) -> Dict[int, str]:
-    itemID_ = ','.join(f'{i}' for i in itemID)
+    itemID_ = ",".join(f"{i}" for i in itemID)
     sql = f"""
         select itemID,key from items where itemID in ({itemID_})
     """
@@ -311,7 +333,7 @@ def get_item_key_by_itemid(itemID: int) -> str:
 
 
 def get_items_type_by_itemids(*itemID: int) -> Dict[int, itemTypes]:
-    itemID_ = ','.join(f'{i}' for i in itemID)
+    itemID_ = ",".join(f"{i}" for i in itemID)
     sql = f"""
         select itemID,itemTypeID from items where itemID in ({itemID_})
     """

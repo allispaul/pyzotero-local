@@ -4,23 +4,18 @@ from typing import Dict
 from .base import prefjs_fn, try_parse_pref
 import re
 
-match_user_pref = re.compile("""user_pref\("([^"]+)", (.+)\);""")
+match_user_pref = re.compile(r"""user_pref\("([^"]+)", (.+)\);""")
 
-__all__ = [
-    'get_and_parse_user_prefs',
-    'get_and_parse_user_pref',
-    'search_user_prefs'
-]
+__all__ = ["get_and_parse_user_prefs", "get_and_parse_user_pref", "search_user_prefs"]
 
 
-# user_pref("extensions.zotero.export.quickCopy.setting", "export=9cb70025-a888-4a29-a210-93ec52da40d4");
 def _get_user_prefs() -> Dict[str, str]:
     """
     saved in <proile_directory>/prefs.js, get raw value
     :return:
     """
     prof = {}
-    with open(prefjs_fn(), 'r') as r:
+    with open(prefjs_fn(), "r") as r:
         for line in r:
             res = re.search(match_user_pref, line)
             if res is not None:
@@ -30,10 +25,9 @@ def _get_user_prefs() -> Dict[str, str]:
 
 def search_user_prefs(keylike: str) -> dict:
     user_prefs = _get_user_prefs()
-    keylike = keylike.replace('.', '').lower()
+    keylike = keylike.replace(".", "").lower()
     return {
-        k: try_parse_pref(user_prefs[k])
-        for k in user_prefs if keylike in k.lower()
+        k: try_parse_pref(user_prefs[k]) for k in user_prefs if keylike in k.lower()
     }
 
 
