@@ -27,7 +27,8 @@ def search_user_prefs(keylike: str) -> dict:
     user_prefs = _get_user_prefs()
     keylike = keylike.replace(".", "").lower()
     return {
-        k: try_parse_pref(user_prefs[k]) for k in user_prefs if keylike in k.lower()
+        k: try_parse_pref(user_prefs[k]) for k in user_prefs 
+        if keylike in k.replace(".", "").lower()
     }
 
 
