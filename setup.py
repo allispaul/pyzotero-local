@@ -12,6 +12,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'fire',
+        'whoosh',
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

@@ -70,8 +70,6 @@ dump('./Profiles.zip',...)
 index and global search files (supported by
 [whoosh](https://github.com/mchaput/whoosh))
 
-> you need to install whoosh manually by `pip install whoosh`
-
 ```python
 from pprint import pprint
 from pyzolocal.files import index, search_content
