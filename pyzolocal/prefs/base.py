@@ -53,15 +53,7 @@ def prefs_root():
     user_root = os.path.expanduser("~")
     zotero_root = profile_root()
     prof_relroot = read_profile_path(os.path.join(zotero_root, "profiles.ini"))
-    if is_win():
-        return os.path.join(zotero_root, prof_relroot)
-    elif is_linux():
-        prof_relroot = read_profile_path(os.path.join(zotero_root, "profiles.ini"))
-        return os.path.join(zotero_root, prof_relroot)
-    elif is_mac():
-        return os.path.join(zotero_root, prof_relroot)
-    else:
-        raise NotImplementedError()
+    return os.path.join(zotero_root, prof_relroot)
 
 
 @lru_cache(1)
