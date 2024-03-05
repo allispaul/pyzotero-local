@@ -1,8 +1,8 @@
 try:
     import flask
 except:
-    raise ModuleNotFoundError('fastapi not found, run '
-                              '     pip install fastapi'
+    raise ModuleNotFoundError('flask not found, run '
+                              '     pip install flask'
                               ' to install it')
 from .. import __version__
 from .base import get_sql_api_map, get_prefs_api_map
