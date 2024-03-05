@@ -70,20 +70,10 @@ def prefjs_fn():
 
 
 def try_parse_pref(value: str):
-    if value is None:
-        return value
-
-    if value.startswith('"'):
+    if value in {"false", "true"} or value.isnumeric():
+        return eval(value.title())
+    elif value.startswith('"'):
         value = value.strip('"')
-        if value[0] in "[{":
-            value = value.replace("\\", "")
-            try:
-                value = json.loads(value)
-            except:
-                pass
-        return value
-    else:
-        if value in {"false", "true"} or value.isnumeric():
-            return eval(value.title())
-
-    return value
+        if not value or value[0] not in "[{":
+            return value
+        return json.loads(value.replace("\\", ""))
