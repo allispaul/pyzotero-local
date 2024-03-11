@@ -7,9 +7,11 @@ setup(
     version=__version__,
     description="A Python tool kit for interacting "
     + "with the locally hosted Zotero database.",
-    url="https://github.com/sailist/pyzotero-local",
+    url="https://github.com/allispaul/pyzotero-local",
     author="Haozhe Yang",
     author_email="yyanghaozhe@outlook.com",
+    maintainer="Paul VanKoughnett",
+    maintainer_email="allispaul@gmail.com",
     license="GNU General Public License v3",
     include_package_data=True,
     install_requires=[
