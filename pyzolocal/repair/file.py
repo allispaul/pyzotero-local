@@ -1,9 +1,11 @@
 """
 修复命名错误，删除多余的，报告缺失的
 """
+
 import os
 import shutil
-from ..prefs.common import dataDir, KEY_STORAGE
+
+from ..prefs.common import KEY_STORAGE, dataDir
 from ..sqls import gets
 
 
@@ -13,7 +15,7 @@ def rename_like_file():
             tgt = os.path.join(disdir, basename)
             src = os.path.join(disdir, dir_like[0])
             os.rename(src, tgt)
-            print(src, 'to', tgt)
+            print(src, "to", tgt)
 
 
 def delete_dir_not_in_db(rm=False):
@@ -35,8 +37,8 @@ def delete_dir_not_in_db(rm=False):
         if key not in db_keys:
             res.append(os.path.join(storage_root, key))
     if rm:
-        for dir in res:
-            shutil.rmtree(dir)
+        for directory in res:
+            shutil.rmtree(directory)
     return res
 
 
@@ -62,8 +64,5 @@ def get_disappear():
             else:
                 dir_has = []
 
-            res[disfn] = [
-                disdir,
-                dir_has
-            ]
+            res[disfn] = [disdir, dir_has]
     return res

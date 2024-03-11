@@ -1,9 +1,9 @@
-import zlib
-import shutil
 import os
-from sqlite3 import Connection
-from ..prefs.common import dataDir
-from sqlite3 import connect
+import shutil
+import zlib
+from sqlite3 import Connection, connect
+
+from pyzolocal.prefs.common import dataDir
 
 
 def exec_fetchall(sql):
@@ -36,9 +36,9 @@ def create_conn() -> Connection:
     :return:
     """
     data_dir = dataDir()
-    sqlite_fn = os.path.join(data_dir, 'zotero.sqlite')
-    shutil.copy(sqlite_fn, os.path.join(data_dir, 'zotero.wrap.sqlite.bak'))
-    sqlite_fn = os.path.join(data_dir, 'zotero.wrap.sqlite.bak')
+    sqlite_fn = os.path.join(data_dir, "zotero.sqlite")
+    shutil.copy(sqlite_fn, os.path.join(data_dir, "zotero.wrap.sqlite.bak"))
+    sqlite_fn = os.path.join(data_dir, "zotero.wrap.sqlite.bak")
 
     assert os.path.exists(sqlite_fn)
     return connect(sqlite_fn)

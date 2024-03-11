@@ -1,5 +1,6 @@
-import zipfile
 import os
+import zipfile
+
 from ..prefs.base import profile_root
 
 
@@ -8,13 +9,13 @@ def compress(dirname, zipfilename):
     if os.path.isfile(dirname):
         filelist.append(dirname)
     else:
-        for root, dirs, files in os.walk(dirname):
+        for root, _dirs, files in os.walk(dirname):
             for name in files:
                 filelist.append(os.path.join(root, name))
 
     zf = zipfile.ZipFile(zipfilename, "w", zipfile.ZIP_DEFLATED)
     for tar in filelist:
-        arcname = tar[len(dirname):]
+        arcname = tar[len(dirname) :]
         zf.write(tar, arcname)
     zf.close()
 
@@ -25,21 +26,22 @@ def decompress(zipfilename, unziptodir):
 
     zfobj = zipfile.ZipFile(zipfilename)
     for name in zfobj.namelist():
-        name = name.replace('\\', '/')
+        name = name.replace("\\", "/")
 
-        if name.endswith('/'):
+        if name.endswith("/"):
             os.mkdir(os.path.join(unziptodir, name))
         else:
             ext_filename = os.path.join(unziptodir, name)
             ext_dir = os.path.dirname(ext_filename)
-            if not os.path.exists(ext_dir): os.makedirs(ext_dir, exist_ok=True)
+            if not os.path.exists(ext_dir):
+                os.makedirs(ext_dir, exist_ok=True)
             # TODO verify before overwrite
-            with open(ext_filename, 'wb') as outfile:
+            with open(ext_filename, "wb") as outfile:
                 outfile.write(zfobj.read(name))
 
 
-def bundle(target_dir='./'):
-    compress(profile_root(), os.path.join(target_dir, 'Profiles.zip'))
+def bundle(target_dir="./"):
+    compress(profile_root(), os.path.join(target_dir, "Profiles.zip"))
 
 
 def dump(source_fn, target_fn):

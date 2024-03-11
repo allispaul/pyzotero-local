@@ -1,7 +1,7 @@
-import platform
-import json
 import configparser
+import json
 import os
+import platform
 from functools import lru_cache
 
 
@@ -50,7 +50,6 @@ def profile_root():
 
 
 def prefs_root():
-    user_root = os.path.expanduser("~")
     zotero_root = profile_root()
     prof_relroot = read_profile_path(os.path.join(zotero_root, "profiles.ini"))
     return os.path.join(zotero_root, prof_relroot)

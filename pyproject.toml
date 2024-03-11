@@ -1,5 +1,6 @@
 [tool.isort]
 profile = "black"
+skip = ".ipynb_checkpoints"
 
 [tool.pylint.format]
 max-line-length = "88"

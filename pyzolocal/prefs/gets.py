@@ -1,8 +1,9 @@
 # This file used to read Zotero Profile
 # see https://www.zotero.org/support/kb/profile_directory
-from typing import Dict
-from .base import prefjs_fn, try_parse_pref
 import re
+from typing import Dict
+
+from .base import prefjs_fn, try_parse_pref
 
 match_user_pref = re.compile(r"""user_pref\("([^"]+)", (.+)\);""")
 
@@ -27,7 +28,8 @@ def search_user_prefs(keylike: str) -> dict:
     user_prefs = _get_user_prefs()
     keylike = keylike.replace(".", "").lower()
     return {
-        k: try_parse_pref(user_prefs[k]) for k in user_prefs 
+        k: try_parse_pref(user_prefs[k])
+        for k in user_prefs
         if keylike in k.replace(".", "").lower()
     }
 

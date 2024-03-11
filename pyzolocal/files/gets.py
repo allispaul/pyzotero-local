@@ -1,14 +1,14 @@
-from .base import index_root
-
+import re
 from itertools import chain
 
 from whoosh.index import open_dir
-from whoosh.query import *
-import re
+from whoosh.query import Or, Term
 
-match_highlight = re.compile('<b class="match term([0-9]+)">([^<]+)<\/b>')
+from .base import index_root
 
-__all__ = ['search_content']
+match_highlight = re.compile('<b class="match term([0-9]+)">([^<]+)</b>')
+
+__all__ = ["search_content"]
 
 
 def search_content(*content: str, limit=10) -> dict:
@@ -16,8 +16,10 @@ def search_content(*content: str, limit=10) -> dict:
     ix = open_dir(index_root())
     searcher = ix.searcher()
 
-    items = list(chain(*[i.split(' ') for i in content]))
-    items = [Term('title', item) for item in items] + [Term('content', item) for item in items]
+    items = list(chain(*[i.split(" ") for i in content]))
+    items = [Term("title", item) for item in items] + [
+        Term("content", item) for item in items
+    ]
 
     quary = Or(items)
 
@@ -28,22 +30,20 @@ def search_content(*content: str, limit=10) -> dict:
     size = min(len(results), limit)
     for i in range(size):
         res = results[i].fields()
-        path = res['path']
-        title = results[i].highlights('title').split('...')[0]
+        path = res["path"]
+        title = results[i].highlights("title").split("...")[0]
         if len(title.strip()) == 0:
-            title = res['title']
+            title = res["title"]
         results.fragmenter.surround = 75
-        contents = results[i].highlights('content').replace('\n', ' ').split('...')
+        contents = results[i].highlights("content").replace("\n", " ").split("...")
 
-        ress.append({'title': title,
-                     'path': path,
-                     'contents': contents})
+        ress.append({"title": title, "path": path, "contents": contents})
 
     return {
-        'base': {
-            'hit_count': size,
-            'result_count': len(results),
-            'doc_count': ix.doc_count()
+        "base": {
+            "hit_count": size,
+            "result_count": len(results),
+            "doc_count": ix.doc_count(),
         },
-        'result': ress
+        "result": ress,
     }

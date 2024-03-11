@@ -1,11 +1,11 @@
-import os
 import json
-from ..sqls.base import exec_fetchall, pako_inflate
-from typing import List, Dict
-from ..beans.enum import fileds, itemTypes
-from ..beans import types as t
-
+import os
 from collections import defaultdict
+from typing import Dict, List
+
+from ..beans import types as t
+from ..beans.enum import fileds, itemTypes
+from ..sqls.base import exec_fetchall, pako_inflate
 
 
 def get_settings() -> dict:
@@ -56,12 +56,12 @@ def get_collections() -> List[t.Collection]:
 
 def get_itemids(include_delete=False) -> List[int]:
     if include_delete:
-        sql = f"""
+        sql = """
         select itemID from items
         """
     else:
-        sql = f"""
-        select itemID from items 
+        sql = """
+        select itemID from items
         where itemID not in (select itemID from deletedItems)
         """
 
@@ -81,10 +81,10 @@ def get_item_creators(itemID: int = -1) -> List[t.Creator]:
 
 
 def get_items_info() -> List[t.Item]:
-    sql = f"""
-    select * from 
-        (select * from itemData) 
-            left join itemDataValues  
+    sql = """
+    select * from
+        (select * from itemData)
+            left join itemDataValues
         using (valueID)
     where itemID not in (select itemID from deletedItems)
     """
@@ -122,8 +122,8 @@ def get_items_info() -> List[t.Item]:
 
 def get_item_info_by_itemid(itemID: int) -> t.Item:
     sql = f"""
-    select * from 
-        (select * from itemData where itemID={itemID}) 
+    select * from
+        (select * from itemData where itemID={itemID})
             inner join itemDataValues using (valueID)
     """
 
@@ -182,7 +182,9 @@ def get_attachments_by_parentid(parentItemID: int) -> List[t.Attachment]:
     """
     sql = f"""
     select itemID,contentType,path from itemAttachments
-    where itemID in (select itemID from itemAttachments where parentItemID={parentItemID})
+    where itemID in (
+        select itemID from itemAttachments where parentItemID={parentItemID}
+    )
     """
 
     cursor, values = exec_fetchall(sql)
@@ -216,11 +218,13 @@ def get_item_attachments_by_parentid(parentItemID: int) -> List[t.Item]:
     :return:
     """
     sql = f"""
-    select * from 
-        (select * from itemData) 
-            inner join itemDataValues  
+    select * from
+        (select * from itemData)
+            inner join itemDataValues
         using (valueID)
-    where itemID in (select itemID from itemAttachments where parentItemID={parentItemID})
+    where itemID in (
+        select itemID from itemAttachments where parentItemID={parentItemID}
+    )
     """
 
     cursor, values = exec_fetchall(sql)
@@ -251,8 +255,8 @@ def get_item_attachments_by_parentid(parentItemID: int) -> List[t.Item]:
 
 def get_items_info_from_tag_by_tagid(tagID: int) -> List[t.Item]:
     sql = f"""
-    select * from 
-        (select * from itemData) 
+    select * from
+        (select * from itemData)
             inner join itemDataValues using (valueID)
             inner join (select itemID from itemTags where tagID={tagID}) using (itemID)
     """
@@ -283,10 +287,12 @@ def get_items_info_from_tag_by_tagid(tagID: int) -> List[t.Item]:
 
 def get_items_info_from_coll_by_collid(collID: int) -> List[t.Item]:
     sql = f"""
-    select * from 
-        (select * from itemData) 
+    select * from
+        (select * from itemData)
             inner join itemDataValues using (valueID)
-            inner join (select itemID from collectionItems where collectionID={collID}) using (itemID)
+            inner join (
+                select itemID from collectionItems where collectionID={collID}
+            ) using (itemID)
     """
 
     cursor, values = exec_fetchall(sql)
@@ -352,7 +358,7 @@ def get_item_tags_by_itemid(itemID: int) -> List[t.Tag]:
     sql = f"""
         select * from
         (select * from itemTags where itemID={itemID})
-            inner join tags using (tagID) 
+            inner join tags using (tagID)
     """
     cursor, values = exec_fetchall(sql)
     return [t.Tag(i[0], i[1]) for i in values]

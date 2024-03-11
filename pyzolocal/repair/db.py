@@ -1,7 +1,7 @@
 import os
-from ..prefs.common import dataDir, KEY_STORAGE
-from ..sqls import gets, base
-from ..beans.enum import itemTypes
+
+from ..prefs.common import KEY_STORAGE, dataDir
+from ..sqls import gets
 
 
 def insert_disappear_dir_in_db():
@@ -13,7 +13,7 @@ def insert_disappear_dir_in_db():
     sql = """
         INSERT INTO items (itemTypeID, libraryID, key)
             VALUES ({}, {}, {});
-        """
+        """  # noqa: F841
     # TODO execte sql
     res = []
     for key in storage_dirs:

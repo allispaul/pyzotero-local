@@ -1,9 +1,5 @@
-import pyzolocal.repair
-from pyzolocal.sync.base import bundle, dump
-from pyzolocal.apis.fastapi import get_fastapis
-from pyzolocal.apis.flask import get_flaskapis
+import os
 
-from pyzolocal.sqls.gets import get_item_key_by_itemid
 # from pyzolocal.sqls import create_conn
 # from functools import wraps
 #
@@ -27,8 +23,14 @@ from pyzolocal.sqls.gets import get_item_key_by_itemid
 #
 # app.run()
 from pprint import pprint
+
+import pyzolocal.repair
 from pyzolocal import repair
-import os
+from pyzolocal.apis.fastapi import get_fastapis
+from pyzolocal.apis.flask import get_flaskapis
+from pyzolocal.sqls.gets import get_item_key_by_itemid
+from pyzolocal.sync.base import bundle, dump
+
 for fn in repair.delete_dir_not_in_db():
     print(os.listdir(fn))
 
@@ -36,5 +38,4 @@ print()
 # pprint(pyzolocal.repair.get_disappear())
 
 import pyzotero
-
 from pyzotero import zotero

@@ -152,4 +152,3 @@ class itemTypes(Enum):
 class commonPrefs:
     dataDir = "extensions.zotero.dataDir"
     attachmentDir = "extensions.zotero.baseAttachmentPath"
-
